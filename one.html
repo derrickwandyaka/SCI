@@ -47,7 +47,6 @@ button,a.btn{flex:1;min-width:140px;text-align:center;text-decoration:none;paddi
   var fmt=function(n){n=Number(n)||0;return 'UGX '+n.toLocaleString('en-US')};
   var bg=new Image(), ready=false, blob=null;
   function rr(c,x,y,w,h,r){c.beginPath();c.moveTo(x+r,y);c.arcTo(x+w,y,x+w,y+h,r);c.arcTo(x+w,y+h,x,y+h,r);c.arcTo(x,y+h,x,y,r);c.arcTo(x,y,x+w,y,r);c.closePath()}
-  function wrap(c,t,max){var words=t.split(/\s+/),lines=[],cur='';words.forEach(function(w){var test=cur?cur+' '+w:w;if(c.measureText(test).width>max&&cur){lines.push(cur);cur=w}else cur=test});lines.push(cur);return lines}
   function draw(){
     if(!ready)return;
     var cv=document.createElement('canvas');cv.width=cv.height=1200;
@@ -56,10 +55,11 @@ button,a.btn{flex:1;min-width:140px;text-align:center;text-decoration:none;paddi
     var name=$('gn').value.trim()||'Guest Name';
     var X=36,Y=222,W=672,padX=43,padY=38,maxW=1200-2*X;
     c.font='700 74px Georgia, serif';
-    W=Math.max(W,Math.min(maxW,Math.ceil(c.measureText(name).width+2*padX)));
+    var nameWidth=c.measureText(name).width;
+    W=Math.max(W,Math.min(maxW,Math.ceil(nameWidth+2*padX)));
     var inner=W-2*padX;
-    var lines=wrap(c,name,inner);
-    var H=padY+36+12+lines.length*82+padY-14;
+    var nameSize=74*Math.min(1,inner/nameWidth);
+    var H=padY+36+12+82+padY-14;
     rr(c,X,Y,W,H,36);c.fillStyle='rgba(14,24,75,0.82)';c.fill();
     c.lineWidth=5;c.strokeStyle='#f5e61b';c.stroke();
     c.textBaseline='alphabetic';
@@ -69,8 +69,8 @@ button,a.btn{flex:1;min-width:140px;text-align:center;text-decoration:none;paddi
     c.fillText('DEAR',X+padX,y+28);
     try{c.letterSpacing='0px'}catch(e){}
     y+=36+12;
-    c.font='700 74px Georgia, serif';c.fillStyle='#fff';
-    lines.forEach(function(l,i){c.fillText(l,X+padX,y+64+i*82)});
+    c.font='700 '+nameSize+'px Georgia, serif';c.fillStyle='#fff';
+    c.fillText(name,X+padX,y+64);
     var url=cv.toDataURL('image/png');
     $('out').src=url;
     var fn='Invitation - '+name.replace(/[^\w\- ]+/g,'').trim()+'.png';
