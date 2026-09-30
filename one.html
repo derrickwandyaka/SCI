@@ -54,8 +54,10 @@ button,a.btn{flex:1;min-width:140px;text-align:center;text-decoration:none;paddi
     var c=cv.getContext('2d');
     c.drawImage(bg,0,0,1200,1200);
     var name=$('gn').value.trim()||'Guest Name';
-    var X=36,Y=222,W=672,padX=43,padY=38,inner=W-2*padX;
+    var X=36,Y=222,W=672,padX=43,padY=38,maxW=1200-2*X;
     c.font='700 74px Georgia, serif';
+    W=Math.max(W,Math.min(maxW,Math.ceil(c.measureText(name).width+2*padX)));
+    var inner=W-2*padX;
     var lines=wrap(c,name,inner);
     var H=padY+36+12+lines.length*82+padY-14;
     rr(c,X,Y,W,H,36);c.fillStyle='rgba(14,24,75,0.82)';c.fill();
