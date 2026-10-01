@@ -23,9 +23,28 @@ button,a.btn{flex:1;min-width:140px;text-align:center;text-decoration:none;paddi
 .alt{background:#f5e61b!important;color:#16226b!important}
 .note{font-size:12px;opacity:.75;margin-top:10px;line-height:1.5}
 .hide{display:none}
+body.locked .wrap{display:none}
+#gate{display:none;position:fixed;inset:0;z-index:9999;align-items:center;justify-content:center;background:var(--bg);padding:16px}
+body.locked #gate{display:flex}
+.gate-box{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px;width:100%;max-width:340px}
+.gate-box h2{margin:0 0 10px;font-size:18px}
+.gate-box button{width:100%;margin-top:12px}
+.gate-err{color:#d33;font-size:13px;margin-top:8px;min-height:1em}
 </style>
 </head>
-<body>
+<body class="locked">
+
+<div id="gate">
+  <div class="gate-box">
+    <h2>Enter passcode</h2>
+    <input id="pc" type="password" placeholder="Passcode" autocomplete="off">
+    <button id="pcBtn" type="button">Unlock</button>
+    <div id="pcErr" class="gate-err"></div>
+  </div>
+</div>
+
+<div class="wrap">
+  ...your existing content...
 <div class="wrap">
   <div class="form">
     <h2>Create a guest card</h2>
@@ -120,6 +139,27 @@ button,a.btn{flex:1;min-width:140px;text-align:center;text-decoration:none;paddi
       });
     }catch(e){download()}
   };
+})();
+  (function(){
+  var PASSCODES = ['SCI-2026-A', 'SCI-2026-B'];   // your two passcodes
+
+  function unlock(){
+    document.body.classList.remove('locked');
+    try{ sessionStorage.setItem('unlocked','1'); }catch(e){}
+  }
+
+  try{ if(sessionStorage.getItem('unlocked')==='1'){ unlock(); return; } }catch(e){}
+
+  var input=document.getElementById('pc'),
+      err=document.getElementById('pcErr');
+
+  function check(){
+    if(PASSCODES.indexOf(input.value.trim())!==-1){ unlock(); }
+    else { err.textContent='Incorrect passcode.'; input.value=''; input.focus(); }
+  }
+
+  document.getElementById('pcBtn').addEventListener('click',check);
+  input.addEventListener('keydown',function(e){ if(e.key==='Enter') check(); });
 })();
 </script>
 </body>
